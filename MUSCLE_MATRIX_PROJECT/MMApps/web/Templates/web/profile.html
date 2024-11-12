@@ -1,0 +1,233 @@
+{% extends 'web/web_base.html' %}
+
+{% block title %}
+Profile
+{% endblock %}
+
+{% block style %}
+{% endblock %}
+
+{% block body %}
+<div class="max-w-full mx-auto p-4 flex flex-col md:flex-row justify-center">
+    <!-- Profile Upload Section -->
+    <div class="bg-white rounded-lg shadow-lg p-6 m-4 flex flex-col items-center flex-shrink-0 w-full md:w-1/3">
+        <img src="{{ profile_info.profile.url }}" alt="Current Profile"
+            class="w-32 h-32 rounded-full border-2 border-gray-300 object-cover mb-4">
+        <span class="block text-lg font-semibold mb-4">Current Profile</span>
+
+        <form action="{% url 'edit_profile_picture' %}" method="post" enctype="multipart/form-data"
+            class="flex flex-col items-center w-full">
+            {% csrf_token %}
+            <input type="file" name="profile"
+                class="mb-4 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-blue-300 w-full">
+            <button type="submit"
+                class="w-full bg-red-600 text-white py-2 rounded-md hover:bg-red-700 transition duration-200">Upload</button>
+        </form>
+    </div>
+
+    <!-- Subscription Details Section -->
+    <div class="bg-white rounded-lg shadow-lg overflow-hidden m-4 flex-1 min-w-[300px] w-full md:w-2/3">
+        <div class="p-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-2">Subscription Details</h2>
+            <div class="flex items-center mb-4">
+                <div class="h-12 w-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                    <svg class="h-6 w-6 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                        <path
+                            d="M12 0C5.373 0 0 5.373 0 12c0 6.627 5.373 12 12 12s12-5.373 12-12S18.627 0 12 0zm0 22c-5.524 0-10-4.476-10-10S6.476 2 12 2s10 4.476 10 10-4.476 10-10 10zm-1-15h2v6h-2zm0 8h2v2h-2z">
+                        </path>
+                    </svg>
+                </div>
+                <p class="text-sm text-gray-600">Plan Name: <span class="font-medium text-gray-800">{{
+                        subscription.plan.name }} - [ ₹ {{subscription.plan.price}} ]</span></p>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-gray-600">Start Date:</p>
+                <p class="text-lg font-medium text-gray-800">{{ subscription.start_date }}</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-gray-600">End Date:</p>
+                <p class="text-lg font-medium text-gray-800">{{ subscription.end_date }}</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-gray-600">Duration:</p>
+                <p class="text-lg font-medium text-gray-800">{{ subscription.plan.duration_in_months }} Months</p>
+            </div>
+            <div class="mb-4">
+                <p class="text-sm text-gray-600">Status:</p>
+                <p class="text-lg font-medium">
+                    <span class="px-2 py-1 rounded-full text-white 
+                        {% if subscription.status == 'active' %} bg-green-500 
+                        {% elif subscription.status == 'hold' %} bg-yellow-500 
+                        {% elif subscription.status == 'deactive' %} bg-red-500 
+                        {% endif %}">
+                        {{ subscription.status|title }}
+                    </span>
+                </p>
+            </div>
+        </div>
+        <div class="p-4 bg-gray-100 text-center">
+            <button class="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition duration-200">
+                Renew Subscription
+            </button>
+        </div>
+    </div>
+</div>
+
+<section class="text-gray-600 body-font">
+    <div class="max-w-full mx-auto p-4 flex flex-wrap justify-center">
+        <div class="lg:w-50 mx-auto">
+            <div class="container flex flex-col sm:flex-row mt-10">
+                <form action="{% url 'edit_profile' %}" class="w-full" method="post">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <!-- Profile Settings Section -->
+                        <div class="col-span-1 sm:col-span-2 text-center sm:text-left">
+                            <h2 class="text-gray-900 text-lg mb-1 font-medium title-font">Profile Settings</h2>
+                            <p class="leading-relaxed mb-5 text-gray-600">Personal Informations</p>
+                            <div class="w-full h-1 bg-red-500 rounded mt-2 mb-4"></div>
+                        </div>
+
+                        <div class="relative mb-4">
+                            <label for="first_name" class="leading-7 text-sm text-gray-600">Firstname</label>
+                            <input type="text" id="first_name" name="first_name"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{% if profile_info.first_name %}{{ profile_info.first_name }}{% endif %}"
+                                placeholder="Eric.">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="last_name" class="leading-7 text-sm text-gray-600">Lastname</label>
+                            <input type="text" id="last_name" name="last_name"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{% if profile_info.last_name %}{{ profile_info.last_name }}{% endif %}"
+                                placeholder="Shah.">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="email" class="leading-7 text-sm text-gray-600">Email <span
+                                    class="text-red-400">(You can't change)</span></label>
+                            <input type="email" id="email" name="email"
+                                class="w-full bg-black text-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none  py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ account_info.email }}" placeholder="Example@gmail.com" disabled>
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="mobile" class="leading-7 text-sm text-gray-600">Mobile</label>
+                            <input type="text" id="mobile" name="mobile"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ account_info.mobile }}" placeholder="(+91) 345 9876 123">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="gender" class="leading-7 text-sm text-gray-600">Gender</label>
+                            <select id="gender" name="gender"
+                                class="w-full bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2.5">
+                                <option selected>Choose a Gender</option>
+                                <option value="Male" {% if profile_info.gender == 'Male' %} selected {% endif %}>Male
+                                </option>
+                                <option value="Female" {% if profile_info.gender == 'Female' %} selected {% endif %}>
+                                    Female</option>
+                                <option value="Others" {% if profile_info.gender == 'Others' %} selected {% endif %}>
+                                    Others</option>
+                            </select>
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="date_of_birth" class="leading-7 text-sm text-gray-600">Date of birth</label>
+                            <input type="date" id="date_of_birth" name="date_of_birth"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{% if profile_info.dob %}{{ profile_info.dob|date:'Y-m-d' }}{% endif %}">
+                        </div>
+
+                        <!-- Address Informations Section -->
+                        <div class="col-span-1 sm:col-span-2 mt-4 text-center sm:text-left">
+                            <p class="leading-relaxed mb-5 text-gray-600">Address Informations</p>
+                            <div class="w-full h-1 bg-red-500 rounded mt-2 mb-4"></div>
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="address_line1" class="leading-7 text-sm text-gray-600">Address line 1</label>
+                            <input type="text" id="address_line1" name="line1"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ address_info.address_line1|title|default:'' }}"
+                                placeholder="123 flat opera palace">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="address_line2" class="leading-7 text-sm text-gray-600">Address line 2</label>
+                            <input type="text" id="address_line2" name="line2"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ address_info.address_line2|title|default:'' }}"
+                                placeholder="kholvad road, laskana">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="city" class="leading-7 text-sm text-gray-600">City</label>
+                            <input type="text" id="city" name="city"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ address_info.city|title|default:'' }}" placeholder="Surat">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="state" class="leading-7 text-sm text-gray-600">State</label>
+                            <input type="text" id="state" name="state"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ address_info.state|title|default:'' }}" placeholder="Gujarat">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="zipcode" class="leading-7 text-sm text-gray-600">Zipcode</label>
+                            <input type="text" id="zipcode" name="zipcode"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ address_info.zip_code|default:'' }}" placeholder="111 111">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="country" class="leading-7 text-sm text-gray-600">Country</label>
+                            <input type="text" id="country" name="country"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ address_info.country|title|default:'' }}" placeholder="India">
+                        </div>
+
+                        <!-- Measurements Informations Section -->
+                        <div class="col-span-1 sm:col-span-2 mt-4 text-center sm:text-left">
+                            <p class="leading-relaxed mb-5 text-gray-600">Measurements Informations</p>
+                            <div class="w-full h-1 bg-red-500 rounded mt-2 mb-4"></div>
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="height" class="leading-7 text-sm text-gray-600">Height (in cm)</label>
+                            <input type="number" id="height" name="height"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ profile_info.height|default:0 }}">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="weight" class="leading-7 text-sm text-gray-600">Weight (in kg)</label>
+                            <input type="number" id="weight" name="weight"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ profile_info.weight|default:0 }}">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="chest" class="leading-7 text-sm text-gray-600">Chest (in inches)</label>
+                            <input type="number" id="chest" name="chest"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ profile_info.chest|default:0 }}">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="waist" class="leading-7 text-sm text-gray-600">Waist (in inches)</label>
+                            <input type="number" id="waist" name="waist"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ profile_info.waist|default:0 }}">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="hip" class="leading-7 text-sm text-gray-600">Hip (in inches)</label>
+                            <input type="number" id="hip" name="hip"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{ profile_info.hip|default:0 }}">
+                        </div>
+                        <div class="relative mb-4">
+                            <label for="body_fat" class="leading-7 text-sm text-gray-600">Body Fat</label>
+                            <input type="text" id="body_fat" name="body_fat"
+                                class="w-full bg-white rounded border border-gray-300 focus:border-red-500 focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out"
+                                value="{{measurements_info.body_fat|default:0}}" placeholder="15%">
+                        </div>
+                    </div>
+                    <div class="flex justify-center mt-6">
+                        <button type="submit"
+                            class="text-white bg-red-500 border-0 py-2 px-8 focus:outline-none hover:bg-red-600 rounded text-lg">Save
+                            Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
